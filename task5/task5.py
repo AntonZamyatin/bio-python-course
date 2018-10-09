@@ -11,8 +11,9 @@ def permutations(n, pref=[]):
         if len(pref) == n:
             yield tuple(pref)
         else:
+            s = set(pref)
             for i in range(1, n + 1):
-                if i not in set(pref):
+                if i not in s:
                     yield from gen_n(n, pref + [i])
     return list(gen_n(n))
 
