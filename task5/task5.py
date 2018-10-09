@@ -13,8 +13,7 @@ def permutations(n, pref=[]):
         else:
             for i in range(1, n + 1):
                 if i not in set(pref):
-                    for iter in gen_n(n, pref + [i]):
-                        yield iter
+                    yield from gen_n(n, pref + [i])
     return list(gen_n(n))
 
 
@@ -31,8 +30,7 @@ def correctbracketsequences(n):
                 new_pref = pref + i
                 new_balance = balance + (1 if i == '(' else -1)
                 if len(new_pref) <= 2 * n and new_balance >= 0:
-                    for iter in gen_n(n, new_pref, new_balance):
-                        yield iter
+                    yield from gen_n(n, new_pref, new_balance)
     return list(gen_n(n))
 
 
@@ -47,8 +45,7 @@ def combinationswithrepeats(n, k):
         else:
             m = max(pref) if len(pref) > 0 else 1
             for i in range(m, n + 1):
-                for iter in gen_n(n, k, pref + [i]):
-                    yield iter
+                yield from gen_n(n, k, pref + [i])
     return list(gen_n(n, k))
 
 
@@ -65,8 +62,7 @@ def unorderedpartitions(n):
             for i in range(m, n - m + 2):
                 new_pref = pref + [i]
                 if sum(new_pref) <= n:
-                    for iter in gen_n(n, pref + [i]):
-                        yield iter
+                    yield from gen_n(n, pref + [i])
     return list(gen_n(n))
 
 
