@@ -91,5 +91,3 @@ if __name__ == "__main__":
     assert unorderedpartitions(5) == [(1, 1, 1, 1, 1), (1, 1, 1, 2), (1, 1, 3),
                                       (1, 2, 2), (1, 4), (2, 3), (5,)]
     print("unorderedpartitions - OK")
-
-    print("yo")
