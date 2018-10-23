@@ -42,7 +42,7 @@ def matrixdet(a):
 
 
 def getones(n, k):
-    return np.eye(n, k)
+    return np.eye(n, k=k)
 
 
 if __name__ == "__main__":
