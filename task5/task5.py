@@ -1,7 +1,7 @@
 """Task 5."""
 
 
-def permutations(n, pref=[]):
+def permutations(n):
     """Function.
 
     It returns list of all permutations of n numbers in
