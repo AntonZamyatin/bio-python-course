@@ -1,4 +1,5 @@
 """Task 7."""
+import itertools
 
 def valuesunion(*dicts):
     answ = set()
@@ -66,8 +67,9 @@ def isIPv4(s):
     for n in num:
         if int(n) < 0 or int(n) > 255:
             return False
+        if n[0] == '0' and len(n) != 1:
+            return False
     return True
-
 
 if __name__ == "__main__":
     assert valuesunion({1: 2, 4: 8}) == {2, 8}
