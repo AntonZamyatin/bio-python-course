@@ -56,6 +56,19 @@ def subpalindrome(s):
     return answ
 
 
+def isIPv4(s):
+    for i in s:
+        if i not in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'):
+            return False
+    num = s.split('.')
+    if len(num) != 4:
+        return False
+    for n in num:
+        if int(n) < 0 or int(n) > 255:
+            return False
+    return True
+
+
 if __name__ == "__main__":
     assert valuesunion({1: 2, 4: 8}) == {2, 8}
     assert valuesunion({1: 2}, {4: 8}) == {2, 8}
@@ -77,3 +90,11 @@ if __name__ == "__main__":
     assert subpalindrome('abaxfgf') == 'aba'
     assert subpalindrome('abacabad') == 'abacaba'
     print("subpalindrome - OK")
+
+    assert isIPv4('192.168.0.15')
+    assert isIPv4('255.255.255.255')
+    assert not isIPv4('555.555.555.555')
+    assert not isIPv4('190+2.168.0.0')
+    assert not isIPv4('abacaba')
+    assert not isIPv4('')
+    print('isIPv4 - OK')
