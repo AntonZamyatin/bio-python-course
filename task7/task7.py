@@ -1,4 +1,5 @@
 """Task 7."""
+import functools
 import itertools
 
 def valuesunion(*dicts):
@@ -40,7 +41,7 @@ def subpalindrome(s):
 
     for i in range(len(s)):
         for j in range(i + 1, len(s) + 1):
-            if i == j and max <= 1:
+            if i == j - 1 and max <= 1:
                 if 1 > max:
                     answ = s[i]
                     max = 1
@@ -71,6 +72,111 @@ def isIPv4(s):
             return False
     return True
 
+
+def pascals():
+    prev = (1,)
+
+    for i in itertools.count(1):
+        act = []
+        act.append(1)
+        for k in range(len(prev) - 1):
+            act.append(prev[k] + prev[k + 1])
+        act.append(1)
+        yield tuple(prev)
+        prev = act
+
+
+def spiral(n):
+    i = 1
+    a = [[0 for i in range(n)] for j in range(n)]
+    for l in range(n):
+        a[0][l] = i
+        i += 1
+    h1 = 1
+    h2 = n - 1
+    v1 = 0
+    v2 = n - 1
+    while i <= (n*n):
+        # down
+        for l in range(h2 - h1 + 1):
+            a[h1 + l][v2] = i
+            i += 1
+        v2 -= 1
+
+        # left
+        for l in range(v2 - v1 + 1):
+            a[h2][v2 - l] = i
+            i += 1
+        h2 -= 1
+
+        # up
+        for l in range(h2 - h1 + 1):
+            a[h2 - l][v1] = i
+            i += 1
+        v1 += 1
+
+        # right
+        for l in range(v2 - v1 + 1):
+            a[h1][v1 + l] = i
+            i += 1
+        h1 += 1
+    return a
+
+
+def fibonacci(n):
+    return functools.reduce(lambda x, n: [x[1], x[0] + x[1]],
+                                      range(n), [0, 1])[0]
+
+
+def brackets2(n, m, pref='', balance1=0, balance2=0):
+
+    def count1(pref):
+        return sum(map(lambda x: 1 if x in ('(', ')') else 0, pref))
+
+    def count2(pref):
+        return sum(map(lambda x: 1 if x in ('[', ']') else 0, pref))
+
+    def stack_check(pref):
+        stack = []
+        for el in pref:
+            n = len(stack)
+            if n == 0:
+                stack.append(el)
+            elif stack[n - 1] == '(' and el == ')':
+                stack.pop()
+            elif stack[n - 1] == '['and el == ']':
+                stack.pop()
+            else:
+                stack.append(el)
+        if len(stack) == 0:
+            return True
+        else:
+            return False
+
+    if count1(pref) == 2 * n and count2(pref) == 2 * m\
+       and balance1 == 0 and balance2 == 0 and stack_check(pref):
+        yield pref
+    else:
+        for i in ('(', ')', '[', ']'):
+            new_pref = pref + i
+            if i == '(':
+                new_balance1 = balance1 + 1
+                new_balance2 = balance2
+            elif i == ')':
+                new_balance1 = balance1 - 1
+                new_balance2 = balance2
+            elif i == '[':
+                new_balance2 = balance2 + 1
+                new_balance1 = balance1
+            elif i == ']':
+                new_balance2 = balance2 - 1
+                new_balance1 = balance1
+            if count1(new_pref) <= 2 * n and count2(pref) <= 2 * m\
+                        and new_balance1 >= 0 and new_balance2 >= 0:
+                yield from brackets2(n, m, new_pref, new_balance1,
+                                     new_balance2)
+
+
 if __name__ == "__main__":
     assert valuesunion({1: 2, 4: 8}) == {2, 8}
     assert valuesunion({1: 2}, {4: 8}) == {2, 8}
@@ -100,3 +206,37 @@ if __name__ == "__main__":
     assert not isIPv4('abacaba')
     assert not isIPv4('')
     print('isIPv4 - OK')
+
+    it = pascals()
+    for i in range(9):
+        print(next(it))
+    print("pascal - OK")
+
+    assert spiral(1) == [[1]]
+    assert spiral(2) == [[1, 2],
+                         [4, 3]]
+    assert spiral(4) == [[1, 2, 3, 4],
+                         [12, 13, 14, 5],
+                         [11, 16, 15, 6],
+                         [10, 9, 8, 7]]
+    print("spiral - OK")
+
+    assert fibonacci(1) == 1
+    assert fibonacci(2) == 1
+    assert fibonacci(3) == 2
+    assert fibonacci(4) == 3
+    assert fibonacci(5) == 5
+    assert fibonacci(6) == 8
+    assert fibonacci(7) == 13
+    print("fibonacci - OK")
+
+    assert list(brackets2(1, 0)) == ['()']
+    assert list(brackets2(0, 1)) == ['[]']
+    assert list(brackets2(1, 1)) == ['()[]', '([])', '[()]', '[]()']
+    assert list(brackets2(3, 0)) == ['((()))', '(()())', '(())()', '()(())',
+                                     '()()()']
+    assert list(brackets2(2, 1)) == ['(())[]', '(()[])', '(([]))', '()()[]',
+                                     '()([])', '()[()]', '()[]()', '([()])',
+                                     '([]())', '([])()', '[(())]', '[()()]',
+                                     '[()]()', '[](())', '[]()()']
+    print("brackets - OK")
