@@ -37,24 +37,19 @@ def subpalindrome(s):
     answ = ''
 
     def is_palindrome(word):
+        if len(word) == 1:
+            return True
         return all(word[i] == word[-1*(i+1)] for i in range(len(word)//2))
 
     for i in range(len(s)):
         for j in range(i + 1, len(s) + 1):
-            if i == j - 1 and max <= 1:
-                if 1 > max:
-                    answ = s[i]
-                    max = 1
-                elif max == 1:
-                    if s[i] < answ:
-                        answ = s[i]
-            elif is_palindrome(s[i:j]):
-                if j - i + 1 > max:
+            if is_palindrome(s[i:j]):
+                if j - i > max:
                     answ = s[i:j]
-                    max = j - i + 1
-                elif j - i + 1 == max:
+                    max = j - i
+                elif j - i == max:
                     if s[i:j] < answ:
-                        answ = s[i:j + 1]
+                        answ = s[i:j]
     return answ
 
 
@@ -240,3 +235,4 @@ if __name__ == "__main__":
                                      '([]())', '([])()', '[(())]', '[()()]',
                                      '[()]()', '[](())', '[]()()']
     print("brackets - OK")
+    print(subpalindrome("qfryinzykktqbvgdzaggxyjkw"))
