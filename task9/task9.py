@@ -33,20 +33,6 @@ class FSItem(object):
         else:
             raise FileSystemError("{0} item not exists".format(self.path))
 
-    def create(self):
-        ''' Creates new item in OS
-            raise FileSystemError if item with such path already exists '''
-        if os.path.exists(self.path):
-            raise FileSystemError("{0} already exists".
-                                  format(self.path))
-        else:
-            if type(self) == File:
-                open(self.path, 'a').close()
-            elif type(self) == Directory:
-                os.makedirs(self.path)
-            elif type(self) == FSItem:
-                raise FileSystemError("Wrong type. Not file or Directory")
-
     def getname(self):
         ''' Returns name of current item '''
         return os.path.split(self.path)[1]
@@ -102,6 +88,15 @@ class File(FSItem):
             raise FileSystemError("{0} file not exists".
                                   format(self.path))
 
+    def create(self):
+        ''' Creates new item in OS
+            raise FileSystemError if item with such path already exists '''
+        if os.path.exists(self.path):
+            raise FileSystemError("{0} already exists".
+                                  format(self.path))
+        else:
+            open(self.path, 'a').close()
+
 
 class FileIterator(object):
 
@@ -136,10 +131,11 @@ class Directory(FSItem):
                 raise FileSystemError if current directory does not exists '''
         if os.path.exists(self.path):
             for name in os.listdir(self.path):
-                if os.path.isfile(os.path.join(self.path, name)):
-                    yield File(os.path.join(self.path, name))
-                elif os.path.isdir(os.path.join(self.path, name)):
-                    yield Directory(os.path.join(self.path, name))
+                new_path = os.path.join(self.path, name)
+                if os.path.isfile(new_path):
+                    yield File(new_path)
+                elif os.path.isdir(new_path):
+                    yield Directory(new_path)
         else:
             raise FileSystemError("{0} directory not exists".
                                   format(self.path))
@@ -148,9 +144,7 @@ class Directory(FSItem):
         ''' Yields File instances of files inside of current directory
                 raise FileSystemError if current directory does not exists '''
         if os.path.exists(self.path):
-            for name in os.listdir(self.path):
-                if os.path.isfile(os.path.join(self.path, name)):
-                    yield File(os.path.join(self.path, name))
+            yield from filter(lambda x: x.isfile(), self.items())
         else:
             raise FileSystemError("{0} directory not exists".
                                   format(self.path))
@@ -160,9 +154,7 @@ class Directory(FSItem):
         current directory raise FileSystemError if current directory
         does not exists '''
         if os.path.exists(self.path):
-            for name in os.listdir(self.path):
-                if os.path.isdir(os.path.join(self.path, name)):
-                    yield Directory(os.path.join(self.path, name))
+            yield from filter(lambda x: x.isdirectory(), self.items())
         else:
             raise FileSystemError("{0} directory not exists".
                                   format(self.path))
@@ -190,3 +182,12 @@ class Directory(FSItem):
                                   format(os.path.join(self.path, name)))
         else:
             return Directory(os.path.join(self.path, name))
+
+    def create(self):
+        ''' Creates new item in OS
+            raise FileSystemError if item with such path already exists '''
+        if os.path.exists(self.path):
+            raise FileSystemError("{0} already exists".
+                                  format(self.path))
+        else:
+            os.makedirs(self.path)
