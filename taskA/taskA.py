@@ -25,12 +25,19 @@ class Shell(object):
         os.system('cls')
         print("This is Bioinformatics shell. \nType \"exit\" to quit")
         self.user = s
-        self.prefix = self.user + '@biosh ' + self.current_folder.path + '\n$'
+        self.prefix = ''
         self.stop = False
-        print(self.prefix, end=' ')
+        self.current_command = None
+        print()
 
-    def read_command(self, command_string):
-        self.current_command = Command(command_string)
+    def read_command(self):
+        self.prefix = self.user + '@biosh ' + self.current_folder.path + '\n$'
+        print(self.prefix, end=' ')
+        s = input()
+        if s:
+            self.current_command = Command(s)
+        else:
+            raise Exception
 
     def command_exec(self):
         if self.current_command.command not in self.command_list.keys():
@@ -41,8 +48,7 @@ class Shell(object):
         if not self.stop:
             self.prefix = self.user + '@biosh ' +\
                           self.current_folder.path + '\n$'
-            print()
-            print(self.prefix, end=' ')
+
 
     def exit(self):
         self.stop = True
@@ -59,6 +65,7 @@ class Shell(object):
         for file in fl:
             print(row_format.format(os.path.basename(file.path)[:40],
                   "FILE", os.path.getsize(file.path)))
+        print()
 
     def cd(self, dir):
         if dir == '.':
@@ -67,6 +74,7 @@ class Shell(object):
             self.current_folder = FSI.Directory(dir)
         else:
             print("There is no such directory")
+        print()
 
     def cat(self, file_path):
         if not os.path.exists(file_path):
@@ -78,6 +86,7 @@ class Shell(object):
         with open(file_path, "r") as file:
             for string in file.readlines():
                 print(string, end='')
+        print()
 
     def clear(self):
         os.system('cls')
@@ -101,6 +110,7 @@ class Shell(object):
             with open(file_path, "r") as file:
                 for string in file.readlines()[:int(args[1])]:
                     print(string, end='')
+        print()
 
     def tail(self, file_path, *args):
         if not os.path.exists(file_path):
@@ -121,27 +131,32 @@ class Shell(object):
             with open(file_path, "r") as file:
                 for string in file.readlines()[-int(args[1]):]:
                     print(string, end='')
+        print()
 
     def pwd(self):
         print(self.current_folder.path)
+        print()
 
     def touch(self, file_path):
         if os.path.exists(file_path):
             print("Already exists")
         else:
-            file = FSI.file(file_path)
+            file = FSI.File(file_path)
             file.create()
+        print()
 
     def find(self, name):
         fl = self.current_folder.filesrecursive()
         for file in fl:
             if os.path.basename(file.path)[:len(name)] == name:
                 print(file.path)
+        print()
 
     def print_err(self):
-        print("wrong arguments")
+        print("wrong command or arguments")
         print()
         print(self.prefix, end=' ')
+        print()
 
     command_list = {'ls': ls, 'exit': exit, 'cd': cd,
                     'cat': cat, 'clear': clear, 'head': head,
@@ -151,9 +166,12 @@ class Shell(object):
 
 if __name__ == "__main__":
     shell = Shell()
-
     while not shell.stop:
-        shell.read_command(input())
+        try:
+            shell.read_command()
+        except Exception:
+            print()
+            continue
         try:
             shell.command_exec()
         except TypeError:
