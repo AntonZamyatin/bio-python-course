@@ -40,15 +40,12 @@ class Shell(object):
             raise Exception
 
     def command_exec(self):
-        if self.current_command.command not in self.command_list.keys():
-            print('{} is not a command'.format(self.current_command.command))
-        else:
-            self.command_list[self.current_command.command](self,
-                                                    *self.current_command.args)
+        command = getattr(self, self.current_command.command)
+        if command:
+            command(* self.current_command.args)
         if not self.stop:
             self.prefix = self.user + '@biosh ' +\
                           self.current_folder.path + '\n$'
-
 
     def exit(self):
         self.stop = True
@@ -68,6 +65,8 @@ class Shell(object):
         print()
 
     def cd(self, dir):
+        if not os.path.isabs(dir):
+            dir = os.path.join(self.current_folder.path, dir)
         if dir == '.':
             return
         if os.path.exists(dir) and os.path.isdir(dir):
@@ -77,11 +76,15 @@ class Shell(object):
         print()
 
     def cat(self, file_path):
+        if not os.path.isabs(file_path):
+            file_path = os.path.join(self.current_folder.path, file_path)
         if not os.path.exists(file_path):
             print("File doesnt exist")
+            print()
             return
         if not os.path.isfile(file_path):
             print("This is not a file")
+            print()
             return
         with open(file_path, "r") as file:
             for string in file.readlines():
@@ -92,11 +95,15 @@ class Shell(object):
         os.system('cls')
 
     def head(self, file_path, *args):
+        if not os.path.isabs(file_path):
+            file_path = os.path.join(self.current_folder.path, file_path)
         if not os.path.exists(file_path):
             print("File doesnt exist")
+            print()
             return
         if not os.path.isfile(file_path):
             print("This is not a file")
+            print()
             return
         if not args:
             with open(file_path, "r") as file:
@@ -113,11 +120,15 @@ class Shell(object):
         print()
 
     def tail(self, file_path, *args):
+        if not os.path.isabs(file_path):
+            file_path = os.path.join(self.current_folder.path, file_path)
         if not os.path.exists(file_path):
             print("File doesnt exist")
+            print()
             return
         if not os.path.isfile(file_path):
             print("This is not a file")
+            print()
             return
         if not args:
             with open(file_path, "r") as file:
@@ -138,6 +149,8 @@ class Shell(object):
         print()
 
     def touch(self, file_path):
+        if not os.path.isabs(file_path):
+            file_path = os.path.join(self.current_folder.path, file_path)
         if os.path.exists(file_path):
             print("Already exists")
         else:
@@ -155,13 +168,11 @@ class Shell(object):
     def print_err(self):
         print("wrong command or arguments")
         print()
-        print(self.prefix, end=' ')
-        print()
 
-    command_list = {'ls': ls, 'exit': exit, 'cd': cd,
-                    'cat': cat, 'clear': clear, 'head': head,
-                    'tail': tail, 'pwd': pwd, 'touch': touch,
-                    'find': find}
+    def __getattr__(self, attr):
+        print('{} is not a command'.format(self.current_command.command))
+        print()
+        return None
 
 
 if __name__ == "__main__":
