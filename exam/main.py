@@ -1,5 +1,6 @@
 import curses
 import random
+import sys
 
 class Game():
 
@@ -64,7 +65,7 @@ class Game():
             control = self.scr.getch()
             if control == 27:
                 curses.endwin()
-                break
+                sys.exit(0)
             if control == curses.KEY_LEFT or control == curses.KEY_RIGHT:
                 r_switch = (r_switch + 1) % 2
             self.scr.refresh()
@@ -104,7 +105,7 @@ class Game():
                 choosen = (choosen + 3) % 9
             elif control == 27:
                 curses.endwin()
-                break
+                sys.exit(0)
             self.draw_field(choosen)
         return choosen
 
@@ -132,8 +133,10 @@ class Game():
             w = self.is_win(self.grid)
             if w == 'X':
                 self.draw_field(stat=" WIN ")
+                self.pl_scor += 1
             elif w == 'O':
                 self.draw_field(stat="LOOSE")
+                self.cpu_scor += 1
             elif w == 0:
                 self.draw_field(stat="DRAW!")
 
@@ -155,8 +158,10 @@ class Game():
             w = self.is_win(self.grid)
             if w == 'O':
                 self.draw_field(stat=" WIN ")
+                self.pl_scor += 1
             elif w == 'X':
                 self.draw_field(stat="LOOSE")
+                self.cpu_scor += 1
             elif w == 0:
                 self.draw_field(stat="DRAW!")
 
@@ -217,7 +222,6 @@ class Game():
                 if scores[i] > max:
                     max = scores[i]
                     answ = i
-        print(scores)
         return free[answ]
 
     def pro_round(self):
@@ -238,16 +242,16 @@ class Game():
                         break
                 if self.free_cells and not self.is_win(self.grid):
                     tak = self.pro_cpu(list(self.free_cells))
-                    print(tak)
-                    self.scr.addstr(0, 0, str(tak))
                     self.grid[tak] = 1
                     self.free_cells.remove(tak)
                 self.draw_field(tik)
             w = self.is_win(self.grid)
             if w == 'X':
                 self.draw_field(stat=" WIN ")
+                self.pl_scor += 1
             elif w == 'O':
                 self.draw_field(stat="LOOSE")
+                self.cpu_scor += 1
             elif w == 0:
                 self.draw_field(stat="DRAW!")
 
@@ -274,8 +278,10 @@ class Game():
             w = self.is_win(self.grid)
             if w == 'O':
                 self.draw_field(stat=" WIN ")
+                self.pl_scor += 1
             elif w == 'X':
                 self.draw_field(stat="LOOSE")
+                self.cpu_scor += 1
             elif w == 0:
                 self.draw_field(stat="DRAW!")
 
@@ -283,18 +289,34 @@ class Game():
         self.scr.clear()
         self.scr.refresh()
         self.round_number = 0
+        self.pl_scor = 0
+        self.cpu_scor = 0
+        self.scr.addstr(1, self.dims[1]//2, 'YOU {}:{} CPU'.
+                        format(self.pl_scor, self.cpu_scor))
         if r_switch:
             for _ in range(3):
                 self.round_number += 1
                 self.goofy_round()
-                self.scr.getch()
+                self.scr.addstr(1, self.dims[1]//2, 'YOU {}:{} CPU'.
+                                format(self.pl_scor, self.cpu_scor))
+                if self.scr.getch() == 27:
+                    sys.exit(0)
         else:
             for _ in range(3):
                 self.round_number += 1
                 self.pro_round()
-                self.scr.getch()
-
-
+                self.scr.addstr(1, self.dims[1]//2, 'YOU {}:{} CPU'.
+                                format(self.pl_scor, self.cpu_scor))
+                if self.scr.getch() == 27:
+                    sys.exit(0)
+        self.scr.clear()
+        self.scr.refresh()
+        if self.cpu_scor > self.pl_scor:
+            self.scr.addstr(self.dims[0]//2, self.dims[1]//2 - 5, 'YOU LOOSE!')
+        elif self.cpu_scor == self.pl_scor:
+            self.scr.addstr(self.dims[0]//2, self.dims[1]//2 - 3, 'DRAW!')
+        elif self.cpu_scor < self.pl_scor:
+            self.scr.addstr(self.dims[0]//2, self.dims[1]//2 - 4, 'YOU WIN!')
 
 if __name__ == "__main__":
     game = Game()
