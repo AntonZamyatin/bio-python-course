@@ -291,13 +291,13 @@ class Game():
         self.round_number = 0
         self.pl_scor = 0
         self.cpu_scor = 0
-        self.scr.addstr(1, self.dims[1]//2, 'YOU {}:{} CPU'.
+        self.scr.addstr(1, self.dims[1]//2 - 6, 'YOU {}:{} CPU'.
                         format(self.pl_scor, self.cpu_scor))
         if r_switch:
             for _ in range(3):
                 self.round_number += 1
                 self.goofy_round()
-                self.scr.addstr(1, self.dims[1]//2, 'YOU {}:{} CPU'.
+                self.scr.addstr(1, self.dims[1]//2 - 6, 'YOU {}:{} CPU'.
                                 format(self.pl_scor, self.cpu_scor))
                 if self.scr.getch() == 27:
                     sys.exit(0)
@@ -305,7 +305,7 @@ class Game():
             for _ in range(3):
                 self.round_number += 1
                 self.pro_round()
-                self.scr.addstr(1, self.dims[1]//2, 'YOU {}:{} CPU'.
+                self.scr.addstr(1, self.dims[1]//2 - 6, 'YOU {}:{} CPU'.
                                 format(self.pl_scor, self.cpu_scor))
                 if self.scr.getch() == 27:
                     sys.exit(0)
