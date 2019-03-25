@@ -1,0 +1,20 @@
+"""Task 5."""
+
+
+def permutations(n, pref=[]):
+    """Function.
+
+    It returns list of all permutations of n numbers in
+    tupples.
+    """
+    def gen_permutations(n, pref=[]):
+        if len(pref) == n:
+            yield tuple(pref)
+        else:
+            for i in set(range(1, n + 1)) - set(pref):
+                for j in (gen_permutations(n, pref + [i])):
+                    yield j
+    return list(gen_permutations(n))
+
+
+print(permutations(9))

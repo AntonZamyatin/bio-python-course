@@ -235,4 +235,4 @@ if __name__ == "__main__":
                                      '([]())', '([])()', '[(())]', '[()()]',
                                      '[()]()', '[](())', '[]()()']
     print("brackets - OK")
-    print(subpalindrome("qfryinzykktqbvgdzaggxyjkw"))
+    print(subpalindrome("gzicy"))
